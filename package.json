@@ -17,5 +17,9 @@
     "configuro": "index.js"
   },
   "author": "Colin Meret",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^2.9.30",
+    "prompt": "^0.2.14"
+  }
 }
