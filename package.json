@@ -1,0 +1,21 @@
+{
+  "name": "configuro",
+  "version": "0.0.1",
+  "description": "A commandline tool to manage application configuration files by generating config example files automatically from existing config files",
+  "scripts": {
+    "test": "mocha --harmony --recursive test/"
+  },
+  "preferGlobal": true,
+  "keywords": [
+    "CLI",
+    "commandline-tool",
+    "application",
+    "configuration",
+    "config"
+  ],
+  "bin": {
+    "configuro": "index.js"
+  },
+  "author": "Colin Meret",
+  "license": "ISC"
+}
