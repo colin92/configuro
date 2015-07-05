@@ -36,7 +36,6 @@ If you know that both your files have been updated in a way that configuro canno
 
 ## Author:
 **Colin Meret** 
-
-*[Blog](http://meret.io)
-*[Github](http://github.com/colin92)
-*[LinkedIn](http://linkedin.com/in/colinmeret)
+- [Blog](http://meret.io)
+- [Github](http://github.com/colin92)
+- [LinkedIn](http://linkedin.com/in/colinmeret)
