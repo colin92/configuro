@@ -32,6 +32,11 @@ If you know that both your files have been updated in a way that configuro canno
                       // and allows you to manually merge them, you can also 
                       // do this manually if you do not have your $EDITOR set
 
+To use the config file in your app, simply add,
+
+    var config = require('./config.js');
+    
+Be sure to replace the `'./config.js'` with whatever the relative path to the file is.
 
 **Inspired in part by the ruby gem [dotenv](https://github.com/bkeepers/dotenv) for rails**
 
