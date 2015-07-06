@@ -8,6 +8,33 @@ var prompt = Promise.promisifyAll(require('prompt'));
 var _ = require('lodash');
 var Path = require('path');
 
+var joinPath = function joinPath(fileName) {
+  return Path.join(process.cwd(), fileName);
+};
+  
+// Config template file
+var newFile = {};
+newFile.development = {
+  database: {
+    name: 'default-dev',
+    hostName: 'localhost',
+    port: '27017'
+  },
+  server: {
+    port: '3000'
+  }
+};
+newFile.production = {
+  database: {
+    name: 'default-production',
+    hostName: 'localhost',
+    port: '27017'
+  },
+  server: {
+    port: '3000'
+  }
+};
+
 var writeConfigFile = function writeConfigFile(path, fileString) {
   var file = '// Replace the values below with your own configuration\n' + 
     'var config = ' + JSON.stringify(fileString, null, 2) +
@@ -31,42 +58,22 @@ var readAndParseConfigFile = function readAndParseConfigFile(path) {
 };
 
 var mergeConfigUpdates = function mergeConfigUpdates(currExample, currConfig) { 
-  var updatedExample = Object.create(currExample);
+  var updatedConfig = {}; 
+  var updatedExample = {};
 };
 
 var getConfigFile = function getConfigFile() {
-  return readAndParseConfigFile(Path.join(__dirname, 'config.js'));
+  return readAndParseConfigFile(joinPath('config.js'));
 };
 
 var getConfigExampleFile = function getConfigExampleFile() {
-  return readAndParseConfigFile(Path.join(__dirname, 'config.js'));
+  return readAndParseConfigFile(joinPath('config.js'));
 };
 
 var createNewConfig = function createNewConfig() {
-  var newFile = {  };
-  newFile.development = {
-    database: {
-      name: 'default-dev',
-      hostName: 'localhost',
-      port: '27017'
-    },
-    server: {
-      port: '3000'
-    }
-  };
-  newFile.production = {
-    database: {
-      name: 'default-production',
-      hostName: 'localhost',
-      port: '27017'
-    },
-    server: {
-      port: '3000'
-    }
-  };
-  return writeConfigFile(Path.join(__dirname, 'config.js'), newFile)
+  return writeConfigFile(joinPath('config.js'), newFile)
   .then(function() {
-    return writeConfigFile(Path.join(__dirname, 'config.example.js'), newFile); 
+    return writeConfigFile(joinPath('config.example.js'), newFile); 
   });
 };
 
@@ -84,10 +91,10 @@ var updateConfig = function updateConfig() {
   .then(function(mergedConfigs) {
     updatedExample = mergedConfigs[0];  
     updatedConfig = mergedConfigs[1];  
-    return writeConfigFile(Path.join(__dirname, 'config.example.js'), updatedExample); 
+    return writeConfigFile(joinPath('config.example.js'), updatedExample); 
   })
   .then(function() {
-    return writeConfigFile(Path.join(__dirname, 'config.js'), updatedConfig);
+    return writeConfigFile(joinPath('config.js'), updatedConfig);
   });
 
 };
@@ -122,5 +129,27 @@ if(process.argv.indexOf('new') + 1) {
   .then(null, function(err) {
     console.log('Error: '.red, err); 
   });
+}
+else if(process.argv.indexOf('update') +1) {
+  console.log('Updating config and example files'.magenta);
+  fs.readdirAsync(__dirname)
+  .then(function(dir) {
+    return [(dir.indexOf('config.js') + 1), (dir.indexOf('config.example.js') +1)];
+  })
+  .then(function(configsPresent) {
+    if(!configsPresent[0] && !configsPresent[1]) {
+      console.log('No config or example file detected, please run \'configuro new\''.green);
+      return;
+    }
+    else if(!configsPresent[0]) {
+      console.log('No config file detected... Creating based on example file...'.green);
+      return writeConfigFile(joinPath('config.js'), newFile)
+    }
+    else if(!configsPresent[1]) {
+      console.log('No config example file detected... Creating based on config file...'.green);
+      return writeConfigFile(joinPath('config.example.js'), newFile)
+    }
+  })
+
 }
 
