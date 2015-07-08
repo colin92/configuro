@@ -1,7 +1,6 @@
 # Configuro
 ![Built at Fullstack](https://camo.githubusercontent.com/aec51f267d906a810e0be7e4b9463f2b23bd419e/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f4275696c7425323061742d46756c6c737461636b2d677265656e2e7376673f7374796c653d666c61742d737175617265)
-![NPM version counter]()
-
+[![npm version](https://badge.fury.io/js/configuro.svg)](http://badge.fury.io/js/configuro)
 
 Configuro is a command line tool that allows you to easily create and update
 configuration files, and maintain seperate configurations for production and
