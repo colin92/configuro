@@ -1,6 +1,6 @@
 {
   "name": "configuro",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A commandline tool to manage application configuration files by generating config example files automatically from existing config files",
   "scripts": {
     "test": "mocha --harmony --recursive test/"

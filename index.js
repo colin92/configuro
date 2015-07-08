@@ -35,9 +35,13 @@ newFile.production = {
   }
 };
 
-var writeConfigFile = function writeConfigFile(path, fileString) {
+// Write the file to specified location
+var writeConfigFile = function writeConfigFile(path, fileJSON) {
+  // Takes JSON version of config data, and stringifies it, adding 
+  // comments, 'var config =' and 'module.exports' as necessary for the data
+  // to be required by an app
   var file = '// Replace the values below with your own configuration\n' + 
-    'var config = ' + JSON.stringify(fileString, null, 2) +
+    'var config = ' + JSON.stringify(fileJSON, null, 2) +
     '\nmodule.exports = config[process.env.NODE_ENV];\n'
   return fs.writeFileAsync(path, file, 'utf-8');
 };
@@ -53,13 +57,34 @@ var readAndParseConfigFile = function readAndParseConfigFile(path) {
     return JSON.parse(file); 
   })
   .then(null, function(err) {
-    console.log('Error: '.red, err); 
+    console.log('Error: '.red, 'Check the syntax of your config and example files!'.yellow);
+    console.log('Exiting'.red);
+    process.exit();
   });
 };
 
+var recursiveObjectCopy = function recursiveObjectCopy(obj, targetObj, defaultVal) {
+  var targetObj = targetObj || {};
+  if(typeof obj !== 'object' && !(obj instanceof Array)) {
+      if(typeof defaultVal === 'string') return defaultVal;
+      else {
+        return targetObj && typeof targetObj !== 'object' && !(targetObj instanceof Array) ? targetObj : obj; 
+      }
+  }
+  else if(obj instanceof Array) targetObj = [];
+  var keys = Object.keys(obj);
+  keys.forEach(function(key) {
+    targetObj[key] = recursiveObjectCopy(obj[key], targetObj[key], defaultVal);
+  });
+  return targetObj;
+};
+
 var mergeConfigUpdates = function mergeConfigUpdates(currExample, currConfig) { 
-  var updatedConfig = {}; 
-  var updatedExample = {};
+  var configCopy = recursiveObjectCopy(currConfig, {}); 
+  var exampleCopy = recursiveObjectCopy(currExample, {}); 
+  var mergedConfig = recursiveObjectCopy(currExample, configCopy);
+  var mergedExample = recursiveObjectCopy(currConfig, exampleCopy, '');
+  return [mergedExample, mergedConfig];
 };
 
 var getConfigFile = function getConfigFile() {
@@ -67,7 +92,7 @@ var getConfigFile = function getConfigFile() {
 };
 
 var getConfigExampleFile = function getConfigExampleFile() {
-  return readAndParseConfigFile(joinPath('config.js'));
+  return readAndParseConfigFile(joinPath('config.example.js'));
 };
 
 var createNewConfig = function createNewConfig() {
@@ -131,7 +156,7 @@ if(process.argv.indexOf('new') + 1) {
   });
 }
 else if(process.argv.indexOf('update') +1) {
-  console.log('Updating config and example files'.magenta);
+  console.log('Updating config and example files...'.magenta);
   fs.readdirAsync(__dirname)
   .then(function(dir) {
     return [(dir.indexOf('config.js') + 1), (dir.indexOf('config.example.js') +1)];
@@ -150,6 +175,15 @@ else if(process.argv.indexOf('update') +1) {
       return writeConfigFile(joinPath('config.example.js'), newFile)
     }
   })
-
+  .then(function() {
+    return updateConfig();
+  })
+  .then(function() {
+    console.log('Done'.green); 
+  })
+  .then(null, function(err) {
+    console.log('Error:'.red, err); 
+    process.exit();
+  });
 }
 
